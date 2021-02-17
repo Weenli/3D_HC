@@ -3,20 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyController: MonoBehaviour
 {
     [SerializeField]
     private Transform Ball;
     private float speed;
-    private float StartSpeed = 0.5f;
-    private float DeltaSpeed = 0.25f;
+    private float  StartSpeed = 1f;
+    private float DeltaSpeed = 0.4f;
 
     private Vector3 EnemyStartPosition;
-    private void Start() {
-        EnemyStartPosition = this.transform.position;
+    private void Awake() {
         LevelController.OnLevelUp += UpgradeSpeed;
         LevelController.OnStart += StartEnemy;
-        speed = StartSpeed; 
+        EnemyStartPosition = this.transform.position;
     }
 
     private void StartEnemy(int obj) {
@@ -25,7 +24,7 @@ public class Enemy : MonoBehaviour
     }
 
     private void UpgradeSpeed(int i) {
-        speed += StartSpeed += DeltaSpeed * i;
+        speed = StartSpeed + DeltaSpeed * i;
     }
 
     void Update()
@@ -35,7 +34,11 @@ public class Enemy : MonoBehaviour
     private void OnCollisionEnter(Collision collision) {
         if(collision.gameObject.tag == "Ball") {
             this.transform.position = EnemyStartPosition;
-            CubeForDestroy.OnCollisionBallAndObjects();
+            CubeDestroyer.OnCollisionBallAndObjects();
         }
+    }
+    private void OnDestroy() {
+        LevelController.OnLevelUp -= UpgradeSpeed;
+        LevelController.OnStart -= StartEnemy;
     }
 }

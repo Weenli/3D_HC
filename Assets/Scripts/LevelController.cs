@@ -9,21 +9,24 @@ public class LevelController : MonoBehaviour
     private List<GameObject> Cubes;
     public static Action<int> OnLevelUp;
     public static Action<int> OnStart;
-    public int level { get; private set; }
+    private int level;
+    private void Awake() {
+        Camera.main.fieldOfView = (int)30 * Screen.height / Screen.width; 
+    }
 
     private void Start() {
-        CubeForDestroy.LevelCheck += CheckLevelComplete;
+        CubeDestroyer.OnLevelCheck += LevelCheck;
         level = 1;
     }
 
-    private void CheckLevelComplete() {
-        int Count = 0;
+    private void LevelCheck() {
+        int count = 0;
         foreach(GameObject cube in Cubes) {
             if (!cube.activeSelf) {
-                Count++;
+                count++;
             }
         }
-        if (Count == Cubes.Count) {
+        if (count == Cubes.Count) {
             level++;
             OnLevelUp(level);
             foreach(GameObject cube in Cubes) {
@@ -32,8 +35,6 @@ public class LevelController : MonoBehaviour
         }
     }
     public void StartGame() {
-        if (level != 1) {
             OnStart(level);
-        }
     }
 }
